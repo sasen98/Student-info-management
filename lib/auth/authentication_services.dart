@@ -4,13 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:studentsinfo/model/user.dart' as user;
 
 class AuthenticationServices extends ChangeNotifier {
+  user.User? currentUser;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  Future<String?> logIn(String email, String password) async {
+  Future<String?> logIn(String? email, String? password) async {
     try {
       await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+          email: email!, password: password!);
       return "Logged In";
     } on FirebaseAuthException catch (e) {
       return e.message;
@@ -38,12 +40,12 @@ class AuthenticationServices extends ChangeNotifier {
           .child(userCredential.user!.uid + '.jpg');
       await ref.putFile(userimage!);
       final url = await ref.getDownloadURL();
-
       FirebaseFirestore.instance
           .collection('user')
           .doc(userCredential.user!.uid)
           .set({
-        'image url': url,
+        'id': userCredential.user!.uid,
+        'image_url': url,
         'name': name!,
         'dob': dob!,
         'gender': gender!,
@@ -63,7 +65,43 @@ class AuthenticationServices extends ChangeNotifier {
       });
       return "Logged In";
     } on FirebaseAuthException catch (e) {
+      print('Erroe on signUp');
+      print(e.message);
       return e.message;
     }
+  }
+
+  Future<void> getCurrentUserInfo() async {
+    String uId = FirebaseAuth.instance.currentUser!.uid;
+    await FirebaseFirestore.instance
+        .collection('user')
+        .doc(uId)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> docs) {
+      var userInfo = docs.data();
+      currentUser = user.User(
+          id: userInfo!['id'],
+          image: userInfo['image_url'],
+          name: userInfo['name'],
+          dob: userInfo['dob'],
+          gender: userInfo['gender'],
+          studentClass: userInfo['studentClass'],
+          contactNumber: userInfo['contactNumber'],
+          fathersName: userInfo['fathersName'],
+          mothersName: userInfo['mothersName'],
+          address: userInfo['address'],
+          percentage: userInfo['percentage'],
+          daysPresent: userInfo['daysPresent'],
+          daysAbsent: userInfo['daysAbsent'],
+          totalDays: userInfo['totalDays'],
+          fee: userInfo['fee'],
+          role: userInfo['role']);
+      notifyListeners();
+    }).catchError((error) {
+      print(error.toString());
+    });
+  }
+  Future<void> logOut() async {
+    await _firebaseAuth.signOut();
   }
 }

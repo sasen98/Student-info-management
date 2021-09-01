@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:studentsinfo/auth/authentication_services.dart';
+import 'package:studentsinfo/screens/login_screen.dart';
 
 import 'package:studentsinfo/widgets/rounded_rect_button_widget.dart';
 import '/widgets/user_dash_row_widget.dart';
@@ -14,8 +17,11 @@ class UserDashboardScreen extends StatefulWidget {
 class _UserDashboardScreenState extends State<UserDashboardScreen> {
   @override
   Widget build(BuildContext context) {
+    var currentUser =
+        Provider.of<AuthenticationServices>(context, listen: false).currentUser;
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
           'User Dashboard',
@@ -43,51 +49,59 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                   const SizedBox(height: 15),
                   UserDashRowWidget(
                     label: 'Name:',
-                    value: 'Demo name',
+                    value: currentUser!.name,
                   ),
                   UserDashRowWidget(
                     label: 'Date of Birth:',
-                    value: '2020/02/20',
+                    value: currentUser.dob,
                   ),
                   UserDashRowWidget(
                     label: 'Class:',
-                    value: '5',
+                    value: currentUser.studentClass,
                   ),
                   UserDashRowWidget(
                     label: 'Contact Number:',
-                    value: '9841123456',
+                    value: currentUser.contactNumber,
                   ),
                   UserDashRowWidget(
                     label: 'Fathers Name:',
-                    value: 'demo father',
+                    value: currentUser.fathersName,
                   ),
                   UserDashRowWidget(
                     label: 'Mothers Name:',
-                    value: 'demo mother',
+                    value: currentUser.mothersName,
                   ),
                   UserDashRowWidget(
                     label: 'Address:',
-                    value: 'Demo Address',
+                    value: currentUser.address,
                   ),
                   UserDashRowWidget(
                     label: 'Percentage:',
-                    value: '50%',
+                    value: currentUser.percentage == ''
+                        ? 'Nil'
+                        : currentUser.percentage,
                   ),
                   UserDashRowWidget(
                     label: 'Days Present:',
-                    value: '80',
+                    value: currentUser.daysPresent == ''
+                        ? 'Nil'
+                        : currentUser.daysPresent,
                   ),
                   UserDashRowWidget(
                     label: 'Days Absent:',
-                    value: '20',
+                    value: currentUser.daysAbsent == ''
+                        ? 'Nil'
+                        : currentUser.daysAbsent,
                   ),
                   UserDashRowWidget(
                     label: 'Total School Days:',
-                    value: '100',
+                    value: currentUser.totalDays == ''
+                        ? 'Nil'
+                        : currentUser.totalDays,
                   ),
                   UserDashRowWidget(
                     label: 'Due Fees:',
-                    value: '100',
+                    value: currentUser.fee == '' ? 'Nil' : currentUser.fee,
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -96,7 +110,13 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
           ),
           RoundedRectButtonWidget(
             buttonName: 'Logout',
-            buttonFunction: () => Get.offAllNamed('/login'),
+            buttonFunction: () {
+              Provider.of<AuthenticationServices>(context, listen: false)
+                  .logOut()
+                  .then((_) {
+                Get.to(LoginScreen());
+              });
+            },
           )
         ]),
       ),

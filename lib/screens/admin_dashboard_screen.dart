@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:studentsinfo/auth/authentication_services.dart';
+import 'package:studentsinfo/auth/student_data.dart';
+import 'package:studentsinfo/screens/login_screen.dart';
 import 'package:studentsinfo/widgets/student_list_table_widget.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
@@ -22,7 +27,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     '10'
   ];
   String? _classSelected;
-  String? _studentClass;
+  //String? _studentClass;
   void _search() {
     print('works');
   }
@@ -31,6 +36,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
           'Admin Dashboard',
@@ -38,7 +44,13 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
         ),
         actions: [
           IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Provider.of<AuthenticationServices>(context, listen: false)
+                    .logOut()
+                    .then((_) {
+                  Get.to(LoginScreen());
+                });
+              },
               icon: Icon(
                 Icons.logout,
                 color: Theme.of(context).colorScheme.secondary,

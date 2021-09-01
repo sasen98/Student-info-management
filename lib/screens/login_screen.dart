@@ -1,5 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:studentsinfo/auth/authentication_services.dart';
+import 'package:studentsinfo/screens/admin_dashboard_screen.dart';
+import 'package:studentsinfo/screens/user_dashboard_screen.dart';
+
 import 'package:studentsinfo/widgets/rounded_rect_button_widget.dart';
 import 'package:get/get.dart';
 
@@ -11,19 +15,41 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _auth = FirebaseAuth.instance;
   final _loginKey = GlobalKey<FormState>();
   String? email;
   String? password;
+  void _checkUserRole() {
+    Provider.of<AuthenticationServices>(context, listen: false)
+        .getCurrentUserInfo()
+        .then((_) {
+      var role = Provider.of<AuthenticationServices>(context, listen: false)
+          .currentUser!
+          .role;
+      print(role);
+      if (role == 'user') {
+        Get.to(UserDashboardScreen());
+      } else if (role == 'admin') {
+        Get.to(AdminDashboardScreen());
+      }
+    });
+  }
 
-  void _login() {
-    print('works');
+  Future<void> _login() async {
+    if (_loginKey.currentState!.validate()) {
+      _loginKey.currentState!.save();
+      Provider.of<AuthenticationServices>(context, listen: false)
+          .logIn(email, password)
+          .then((_) {
+        _checkUserRole();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Theme.of(context).colorScheme.primary,
         title: Text(
           'Login',

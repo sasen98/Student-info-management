@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:studentsinfo/auth/student_data.dart';
+import 'package:studentsinfo/model/user.dart';
 import '../widgets/admin_edit_widget.dart';
 import '../widgets/user_dash_row_widget.dart';
 
@@ -15,6 +18,9 @@ class StudentDetailsScreen extends StatefulWidget {
 class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
   @override
   Widget build(BuildContext context) {
+    String studentId = ModalRoute.of(context)!.settings.arguments.toString();
+    Provider.of<StudentData>(context).getStudentDetails(studentId);
+    User studentDetails = Provider.of<StudentData>(context).getStudent();
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: true,
@@ -41,56 +47,65 @@ class _StudentDetailsScreenState extends State<StudentDetailsScreen> {
                   CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     radius: 70,
-                    backgroundImage: const AssetImage('assets/image.png'),
+                    backgroundImage: NetworkImage(studentDetails.image),
                   ),
                   const SizedBox(height: 15),
                   UserDashRowWidget(
                     label: 'Name:',
-                    value: 'Demo name',
+                    value: studentDetails.name,
                   ),
                   UserDashRowWidget(
                     label: 'Date of Birth:',
-                    value: '2020/02/20',
+                    value: studentDetails.dob,
                   ),
                   UserDashRowWidget(
                     label: 'Class:',
-                    value: '5',
+                    value: studentDetails.studentClass,
                   ),
                   UserDashRowWidget(
                     label: 'Contact Number:',
-                    value: '9841123456',
+                    value: studentDetails.contactNumber,
                   ),
                   UserDashRowWidget(
                     label: 'Fathers Name:',
-                    value: 'demo father',
+                    value: studentDetails.fathersName,
                   ),
                   UserDashRowWidget(
                     label: 'Mothers Name:',
-                    value: 'demo mother',
+                    value: studentDetails.mothersName,
                   ),
                   UserDashRowWidget(
                     label: 'Address:',
-                    value: 'Demo Address',
+                    value: studentDetails.address,
                   ),
                   UserDashRowWidget(
                     label: 'Total School Days:',
-                    value: '100',
+                    value: studentDetails.totalDays == ''
+                        ? 'N/A'
+                        : studentDetails.totalDays,
                   ),
                   UserDashRowWidget(
                     label: 'Days Present:',
-                    value: '90',
+                    value: studentDetails.daysPresent == ''
+                        ? 'N/A'
+                        : studentDetails.daysPresent,
                   ),
                   UserDashRowWidget(
                     label: 'Days Absent:',
-                    value: '10',
+                    value: studentDetails.daysAbsent == ''
+                        ? 'N/A'
+                        : studentDetails.daysAbsent,
                   ),
                   UserDashRowWidget(
                     label: 'Percentage:',
-                    value: '50%',
+                    value: studentDetails.percentage == ''
+                        ? 'N/A'
+                        : studentDetails.percentage,
                   ),
                   UserDashRowWidget(
                     label: 'Due Fees:',
-                    value: '4000',
+                    value:
+                        studentDetails.fee == '' ? 'N/A' : studentDetails.fee,
                   ),
                   const SizedBox(height: 10),
                 ],

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 import 'package:studentsinfo/auth/authentication_services.dart';
+import 'package:studentsinfo/auth/student_data.dart';
+import 'package:studentsinfo/model/user.dart';
 
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/student_details_screen.dart';
@@ -25,6 +27,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthenticationServices()),
+        ChangeNotifierProvider(create: (_) => StudentData()),
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
@@ -41,8 +44,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/signup', page: () => const SignUpScreen()),
           GetPage(name: '/adminDash', page: () => const AdminDashboardScreen()),
           GetPage(name: '/userDash', page: () => const UserDashboardScreen()),
-          GetPage(
-              name: '/studentDetail', page: () => const StudentDetailsScreen()),
+          GetPage(name: '/studentDetail', page: () => StudentDetailsScreen()),
         ],
         initialRoute: '/login',
       ),

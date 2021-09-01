@@ -1,8 +1,7 @@
-import 'dart:io';
 
 class User {
   final String id;
-  final File image;
+  final String image;
   final String name;
   final String dob;
   final String gender;
@@ -16,6 +15,7 @@ class User {
   final String daysAbsent;
   final String totalDays;
   final String fee;
+  final String role;
 
   User({
     required this.id,
@@ -33,5 +33,6 @@ class User {
     required this.daysAbsent,
     required this.totalDays,
     required this.fee,
+    required this.role,
   });
 }
