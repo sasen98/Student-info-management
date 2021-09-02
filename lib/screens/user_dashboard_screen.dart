@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+
 import 'package:studentsinfo/auth/authentication_services.dart';
 import 'package:studentsinfo/screens/login_screen.dart';
-
 import 'package:studentsinfo/widgets/rounded_rect_button_widget.dart';
 import '/widgets/user_dash_row_widget.dart';
 
@@ -78,30 +78,30 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                   UserDashRowWidget(
                     label: 'Percentage:',
                     value: currentUser.percentage == ''
-                        ? 'Nil'
+                        ? 'N/A'
                         : currentUser.percentage,
                   ),
                   UserDashRowWidget(
                     label: 'Days Present:',
                     value: currentUser.daysPresent == ''
-                        ? 'Nil'
+                        ? 'N/A'
                         : currentUser.daysPresent,
                   ),
                   UserDashRowWidget(
                     label: 'Days Absent:',
                     value: currentUser.daysAbsent == ''
-                        ? 'Nil'
+                        ? 'N/A'
                         : currentUser.daysAbsent,
                   ),
                   UserDashRowWidget(
                     label: 'Total School Days:',
                     value: currentUser.totalDays == ''
-                        ? 'Nil'
+                        ? 'N/A'
                         : currentUser.totalDays,
                   ),
                   UserDashRowWidget(
                     label: 'Due Fees:',
-                    value: currentUser.fee == '' ? 'Nil' : currentUser.fee,
+                    value: currentUser.fee == '' ? 'N/A' : currentUser.fee,
                   ),
                   const SizedBox(height: 10),
                 ],

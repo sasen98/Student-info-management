@@ -1,18 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:studentsinfo/auth/authentication_services.dart';
+import 'package:studentsinfo/auth/student_data.dart';
 import './rounded_rect_button_widget.dart';
 
 class AdminEditWidget extends StatelessWidget {
-  AdminEditWidget({Key? key}) : super(key: key);
+  final String? uId;
+  AdminEditWidget({@required this.uId});
+
   final _formKey = GlobalKey<FormState>();
-  late String? totalSchoolDays;
-  late String? daysAbsent;
-  late String? daysPresent;
-  late String? result;
-  late String? fees;
-  void _upDate() {
+  String? totalSchoolDays;
+  String? daysAbsent;
+  String? daysPresent;
+  String? result;
+  String? fees;
+  void _upDate(BuildContext context) {
     final isValid = _formKey.currentState!.validate();
     if (isValid) {
       _formKey.currentState!.save();
+      Provider.of<StudentData>(context, listen: false)
+          .updateStudentInfo(
+              uId!, totalSchoolDays!, daysAbsent!, result!, fees!)
+          .then((_) {
+        Get.snackbar('Success!', 'Student Details Updated',
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            colorText: Theme.of(context).colorScheme.secondary);
+      });
     }
   }
 
@@ -111,7 +126,10 @@ class AdminEditWidget extends StatelessWidget {
           const SizedBox(height: 5),
 
           RoundedRectButtonWidget(
-              buttonName: 'Update', buttonFunction: _upDate),
+              buttonName: 'Update',
+              buttonFunction: () {
+                _upDate(context);
+              }),
         ],
       ),
     );

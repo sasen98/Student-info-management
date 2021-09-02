@@ -2,10 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsinfo/auth/authentication_services.dart';
-import 'package:studentsinfo/auth/student_data.dart';
-import 'package:studentsinfo/model/user.dart';
 
+import 'auth/authentication_services.dart';
+import 'auth/student_data.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/student_details_screen.dart';
 import 'screens/user_dashboard_screen.dart';
@@ -46,7 +45,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/userDash', page: () => const UserDashboardScreen()),
           GetPage(name: '/studentDetail', page: () => StudentDetailsScreen()),
         ],
-        initialRoute: '/login',
+        initialRoute: '/adminDash',
       ),
     );
   }

@@ -1,20 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+
 import 'package:studentsinfo/auth/authentication_services.dart';
-import 'package:studentsinfo/auth/student_data.dart';
 import 'package:studentsinfo/screens/login_screen.dart';
-import 'package:studentsinfo/widgets/student_list_table_widget.dart';
+import 'student_details_screen.dart';
 
 class AdminDashboardScreen extends StatefulWidget {
   const AdminDashboardScreen({Key? key}) : super(key: key);
 
   @override
-  _AdminDashboardScreenState createState() => _AdminDashboardScreenState();
+  State<AdminDashboardScreen> createState() => _AdminDashboardScreenState();
 }
 
 class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
   final List<String> _classList = [
+    'All',
     '1',
     '2',
     '3',
@@ -24,14 +26,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
     '7',
     '8',
     '9',
-    '10'
+    '10',
   ];
-  String? _classSelected;
-  //String? _studentClass;
-  void _search() {
-    print('works');
-  }
-
+  String _classSelected = 'All';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -92,25 +89,144 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                       );
                     }).toList(),
                   ),
-                  ElevatedButton(
-                    onPressed: _search,
-                    child: Text(
-                      'Search',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary),
-                    ),
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ),
-                  )
                 ],
               ),
             ),
-            const StudentListTable(),
+            Container(
+              padding: const EdgeInsets.only(top: 10),
+              height: MediaQuery.of(context).size.height,
+              width: double.infinity,
+              child: StreamBuilder<QuerySnapshot>(
+                stream: _classSelected == 'All'
+                    ? FirebaseFirestore.instance
+                        .collection('user')
+                        .where('role', isNotEqualTo: 'admin')
+                        .snapshots()
+                    : FirebaseFirestore.instance
+                        .collection('user')
+                        .where('studentClass', isEqualTo: _classSelected)
+                        .where('role', isNotEqualTo: 'admin')
+                        .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Text('No Data Found');
+                  } else {
+                    return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          DocumentSnapshot ds = snapshot.data!.docs[index];
+                          return InkWell(
+                            onTap: () {
+                              Get.to(() => StudentDetailsScreen(),
+                                  arguments: ds['id']);
+                            },
+                            child: SingleChildScrollView(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(25),
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                width: double.infinity,
+                                height: 110,
+                                margin: const EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 10),
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10, horizontal: 20),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Container(
+                                      width: 50,
+                                      height: 50,
+                                      margin: const EdgeInsets.only(right: 15),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(50),
+                                        border: Border.all(
+                                            width: 2,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary),
+                                        image: DecorationImage(
+                                            image:
+                                                NetworkImage(ds['image_url']),
+                                            fit: BoxFit.fill),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            ds['name'],
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18),
+                                          ),
+                                          const SizedBox(
+                                            height: 6,
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.phone,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(ds['contactNumber'],
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      fontSize: 13,
+                                                      letterSpacing: .3)),
+                                            ],
+                                          ),
+                                          const SizedBox(
+                                            height: 6,
+                                          ),
+                                          Row(
+                                            children: <Widget>[
+                                              Icon(
+                                                Icons.location_on,
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                                size: 20,
+                                              ),
+                                              const SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text(ds['address'],
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      fontSize: 13,
+                                                      letterSpacing: .3)),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),
