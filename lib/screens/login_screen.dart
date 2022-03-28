@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:studentsinfo/auth/authentication_services.dart';
@@ -27,9 +28,11 @@ class _LoginScreenState extends State<LoginScreen> {
           .role;
       print(role);
       if (role == 'user') {
-        Get.to(UserDashboardScreen());
+        Get.to(() => UserDashboardScreen());
       } else if (role == 'admin') {
-        Get.to(AdminDashboardScreen());
+        Get.to(() => AdminDashboardScreen());
+      } else {
+        print("errorMessage");
       }
     });
   }
@@ -37,10 +40,60 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _login() async {
     if (_loginKey.currentState!.validate()) {
       _loginKey.currentState!.save();
-      Provider.of<AuthenticationServices>(context, listen: false)
-          .logIn(email, password)
+
+      await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email!, password: password!)
           .then((_) {
         _checkUserRole();
+      }).catchError((error) {
+        if (error.code == "invalid-email") {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("Email does not exists!!!"),
+                  actions: <Widget>[
+                    new TextButton(
+                        child: new Text('OK'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        })
+                  ],
+                );
+              });
+        }
+        if (error.code == "wrong-password") {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("Password Incorrect!!!"),
+                  actions: <Widget>[
+                    new TextButton(
+                        child: new Text('OK'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        })
+                  ],
+                );
+              });
+        }
+        if (error.code == "user-not-found") {
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("User Not Registered"),
+                  actions: <Widget>[
+                    new TextButton(
+                        child: new Text('OK'),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        })
+                  ],
+                );
+              });
+        }
       });
     }
   }

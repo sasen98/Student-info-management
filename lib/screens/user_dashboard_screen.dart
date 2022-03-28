@@ -44,12 +44,12 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
                   CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     radius: 70,
-                    backgroundImage: const AssetImage('assets/image.png'),
+                    backgroundImage: NetworkImage(currentUser!.image),
                   ),
                   const SizedBox(height: 15),
                   UserDashRowWidget(
                     label: 'Name:',
-                    value: currentUser!.name,
+                    value: currentUser.name,
                   ),
                   UserDashRowWidget(
                     label: 'Date of Birth:',
@@ -112,7 +112,7 @@ class _UserDashboardScreenState extends State<UserDashboardScreen> {
             buttonName: 'Logout',
             buttonFunction: () {
               Provider.of<AuthenticationServices>(context, listen: false)
-                  .logOut()
+                  .logOut(context)
                   .then((_) {
                 Get.to(LoginScreen());
               });

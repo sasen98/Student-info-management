@@ -4,19 +4,35 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:studentsinfo/model/user.dart' as user;
+
+import '../screens/login_screen.dart';
 
 class AuthenticationServices extends ChangeNotifier {
   user.User? currentUser;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  Future<String?> logIn(String? email, String? password) async {
+  Future<String> logIn(String? email, String? password) async {
+    var errorMessage = "success";
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: email!, password: password!);
-      return "Logged In";
+      await _firebaseAuth
+          .signInWithEmailAndPassword(email: email!, password: password!)
+          .catchError((error) {
+        if (error.code == "invalid-email") {
+          errorMessage = "Inavalid Email";
+        }
+        if (error.code == "wrong-password") {
+          errorMessage = "Wrong Password";
+        }
+        if (error.code == "user-not-found") {
+          errorMessage = "User Not Registered";
+        }
+      });
     } on FirebaseAuthException catch (e) {
-      return e.message;
+      print(e.message);
+      errorMessage = "Firebase Error";
     }
+    return errorMessage;
   }
 
   Future<String?> signUp(
@@ -101,7 +117,12 @@ class AuthenticationServices extends ChangeNotifier {
       print(error.toString());
     });
   }
-  Future<void> logOut() async {
-    await _firebaseAuth.signOut();
+
+  Future<void> logOut(context) async {
+    await _firebaseAuth.signOut().then((value) => Navigator.of(context)
+        .pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => LoginScreen()),
+            (route) => false));
+    ;
   }
 }

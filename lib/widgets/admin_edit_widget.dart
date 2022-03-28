@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:studentsinfo/auth/authentication_services.dart';
 import 'package:studentsinfo/auth/student_data.dart';
 import './rounded_rect_button_widget.dart';
 

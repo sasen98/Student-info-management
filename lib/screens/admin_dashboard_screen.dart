@@ -43,9 +43,9 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           IconButton(
               onPressed: () {
                 Provider.of<AuthenticationServices>(context, listen: false)
-                    .logOut()
+                    .logOut(context)
                     .then((_) {
-                  Get.to(LoginScreen());
+                  Get.to(() => LoginScreen());
                 });
               },
               icon: Icon(
@@ -109,7 +109,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                         .snapshots(),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
-                    return Text('No Data Found');
+                    return const Text('No Data Found');
                   } else {
                     return ListView.builder(
                         itemCount: snapshot.data!.docs.length,

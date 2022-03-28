@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
           GetPage(name: '/userDash', page: () => const UserDashboardScreen()),
           GetPage(name: '/studentDetail', page: () => StudentDetailsScreen()),
         ],
-        initialRoute: '/adminDash',
+        initialRoute: '/login',
       ),
     );
   }
